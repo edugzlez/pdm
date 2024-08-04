@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     ST = TypeVar("ST", Traversable, Path)
 
 TEMPLATE_PACKAGE = "pdm.cli.templates"
-BUILTIN_TEMPLATES = ["default", "minimal"]
+BUILTIN_TEMPLATES = ["default", "minimal", "maturin"]
 
 
 class ProjectTemplate:
@@ -37,7 +37,6 @@ class ProjectTemplate:
 
     def generate(self, target_path: Path, metadata: dict[str, Any], overwrite: bool = False) -> None:
         from pdm.compat import tomllib
-
         def replace_all(path: str, old: str, new: str) -> None:
             with open(path, encoding=encoding) as fp:
                 content = fp.read()
@@ -73,7 +72,9 @@ class ProjectTemplate:
                         replace_all(os.path.join(root, f), original_name, new_name)
                     elif Path(root) == self._path and f == "pyproject.toml":
                         replace_all(os.path.join(root, f), import_name, new_import_name)
-
+                    elif Path(root) == self._path and f == "Cargo.toml":
+                        replace_all(os.path.join(root, f), import_name, new_import_name)
+        
         target_path.mkdir(exist_ok=True, parents=True)
         self.mirror(self._path, target_path, [self._path / "pyproject.toml"], overwrite=overwrite)
         self._generate_pyproject(target_path / "pyproject.toml", metadata)

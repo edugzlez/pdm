@@ -121,11 +121,25 @@ class HatchBackend(BuildBackend):
         }
 
 
+class MaturinBackend(BuildBackend):
+    def expand_line(self, req: str, expand_env: bool = True) -> str:
+        print(req)
+        return req
+
+    @classmethod
+    def build_system(cls) -> BuildSystem:
+        return {
+            "requires": ["maturin>=1.4,<2.0"],
+            "build-backend": "maturin",
+        }
+
+
 _BACKENDS: dict[str, type[BuildBackend]] = {
     "pdm-backend": PDMBackend,
     "setuptools": SetuptoolsBackend,
     "flit-core": FlitBackend,
     "hatchling": HatchBackend,
+    "maturin": MaturinBackend,
 }
 # Fallback to the first backend
 DEFAULT_BACKEND = next(iter(_BACKENDS.values()))

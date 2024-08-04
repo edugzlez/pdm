@@ -10,7 +10,7 @@ from pdm.cli.hooks import HookManager
 from pdm.cli.options import skip_option
 from pdm.cli.templates import ProjectTemplate
 from pdm.exceptions import PdmUsageError
-from pdm.models.backends import _BACKENDS, DEFAULT_BACKEND, BuildBackend, get_backend
+from pdm.models.backends import _BACKENDS, DEFAULT_BACKEND, BuildBackend, MaturinBackend, get_backend
 from pdm.models.specifiers import get_specifier
 from pdm.utils import (
     get_user_email_from_git,
@@ -164,6 +164,8 @@ class Command(BaseCommand):
             data["project"]["description"] = description  # type: ignore[index]
         if build_backend is not None:
             data["build-system"] = cast(dict, build_backend.build_system())
+            if build_backend == MaturinBackend and not options.template:
+                options.template = "maturin"
 
         return data
 
